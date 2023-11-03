@@ -36,7 +36,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   family             = "my-ecs-task"
   network_mode       = "awsvpc"
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
-  cpu                = 256
+  cpu                = 1024
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
@@ -44,9 +44,9 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   container_definitions = jsonencode([
     {
       name      = "dockergs"
-      image     = "public.ecr.aws/f9n5f1l7/dgs:latest"
-      cpu       = 256
-      memory    = 512
+      image     = "805071309209.dkr.ecr.us-east-1.amazonaws.com/tax-wizard-ecr"
+      cpu       = 1024
+      memory    = 2048
       essential = true
       portMappings = [
         {
@@ -55,6 +55,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           protocol      = "tcp"
         }
       ]
+
     }
   ])
 }
@@ -71,13 +72,8 @@ resource "aws_ecs_service" "ecs_service" {
     security_groups = [data.terraform_remote_state.vpc.outputs.security_group_id]
   }
 
-  force_new_deployment = true
   placement_constraints {
     type = "distinctInstance"
-  }
-
-  triggers = {
-    redeployment = timestamp()
   }
 
   capacity_provider_strategy {
