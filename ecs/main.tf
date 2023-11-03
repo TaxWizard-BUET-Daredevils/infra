@@ -2,8 +2,7 @@ provider "aws" {
   region                   = "us-east-1"
   shared_credentials_files = ["~/.aws/credentials"]
 }
-
-resource "aws_ecs_cluster" "my_cluster" {
+resource "aws_ecs_cluster" "ecs_cluster" {
   name = "my-ecs-cluster"
 }
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
@@ -36,7 +35,7 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family             = "my-ecs-task"
   network_mode       = "awsvpc"
-  execution_role_arn = "arn:aws:iam::532199187081:role/ecsTaskExecutionRole"
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   cpu                = 256
   runtime_platform {
     operating_system_family = "LINUX"
@@ -68,8 +67,8 @@ resource "aws_ecs_service" "ecs_service" {
   desired_count   = 2
 
   network_configuration {
-    subnets         = [aws_subnet.subnet.id, aws_subnet.subnet2.id]
-    security_groups = [aws_security_group.security_group.id]
+    subnets         = [data.terraform_remote_state.vpc.outputs.subnet1_id, data.terraform_remote_state.vpc.outputs.subnet2_id]
+    security_groups = [data.terraform_remote_state.vpc.outputs.security_group_id]
   }
 
   force_new_deployment = true

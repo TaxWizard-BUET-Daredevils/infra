@@ -1,5 +1,5 @@
 resource "aws_autoscaling_group" "ecs_asg" {
-  vpc_zone_identifier = [aws_subnet.subnet.id, aws_subnet.subnet2.id]
+  vpc_zone_identifier = [data.terraform_remote_state.vpc.outputs.subnet1_id, data.terraform_remote_state.vpc.outputs.subnet2_id]
   desired_capacity    = 2
   max_size            = 3
   min_size            = 1
