@@ -4,6 +4,8 @@ output "rds_endpoint" {
   sensitive = true
 }
 output "aurora-endpoint" {
-  value = aws_rds_cluster.example-1.endpoint
-
+  # value = aws_rds_cluster.example-1.endpoint
+  value     = "postgresql://${aws_rds_cluster.example-1.master_username}:${aws_rds_cluster.example-1.master_password}@${aws_rds_cluster.example-1.endpoint}/${aws_rds_cluster.example-1.database_name}"
+  sensitive = true
 }
+

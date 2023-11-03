@@ -32,6 +32,18 @@ resource "aws_subnet" "subnet-2" {
     Name = "dev-subnet-2"
   }
 }
+
+resource "aws_subnet" "subnet-3" {
+  vpc_id                  = aws_vpc.dev-vpc.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = "us-east-1c" # Choose a different availability zone
+  map_public_ip_on_launch = false        # This ensures instances in this subnet do not get public IPs
+
+  tags = {
+    Name = "dev-subnet-3"
+  }
+}
+
 # create internet gateway
 resource "aws_internet_gateway" "dev-igw" {
   vpc_id = aws_vpc.dev-vpc.id
@@ -55,6 +67,12 @@ resource "aws_route_table_association" "rta-2" {
   subnet_id      = aws_subnet.subnet-2.id
   route_table_id = aws_route_table.route_table.id
 }
+
+resource "aws_route_table_association" "rta-3" {
+  subnet_id      = aws_subnet.subnet-3.id
+  route_table_id = aws_route_table.route_table.id
+}
+
 # create a db subnet group
 resource "aws_db_subnet_group" "db-subnet-group" {
   name = "example"
